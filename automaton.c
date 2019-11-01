@@ -75,6 +75,7 @@ int checks(int p[], int c[],int current)
     int right;
 
 // Checks if it's at the end or start and loops around cyclic
+// Need to pass in size so i can cycle     
     if(current == 0)
     {
         left = 7;
@@ -140,13 +141,16 @@ int runAutomaton(int gen,int rule[])
 
     do
     {
+    	// Size of parent
         for(int i = 0 ; i <=7; i++)
         {
-
+        		// Write binary in here
             state = checks(parent,child,i);
             child[i] = rule[state];
             printf("%d",parent[i]);
+
         }
+        // Newlinr
         printf("\n");
         counter++;
 
