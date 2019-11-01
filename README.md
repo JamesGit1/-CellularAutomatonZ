@@ -1,1 +1,1 @@
-# -CellularAutomatonZ
+# CellularAutomatonZ
