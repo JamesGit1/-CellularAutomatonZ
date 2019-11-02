@@ -77,8 +77,13 @@ int checks(int p[], int c[],int current, int size)
 
 }
 
-int firstGen(int *parentp, int size){
-    printf("Please define \n");
+int runAutomaton(int gen,int rule[],int size)
+{
+    // TODO Make it so the One is at a random spot or let user pick
+    // TODO ask for user how big the array is
+    int parent[size];
+
+    printf("\nPlease define the first generation, with size %d \n",size);
     for (int i=0; i<size; ++i){
         int answer=-1; 
         while(!(answer==1 || answer==0)){
@@ -86,16 +91,8 @@ int firstGen(int *parentp, int size){
             scanf("%d", &answer);
         }
 
-        parentp[i] = answer;  
+        parent[i] = answer;  
     }
-
-}
-
-int runAutomaton(int gen,int rule[],int size)
-{
-    // TODO Make it so the One is at a random spot or let user pick
-    // TODO ask for user how big the array is
-    int parent[size];
 
     int child[size];
     int state;
@@ -112,7 +109,7 @@ int runAutomaton(int gen,int rule[],int size)
             printf("%d",parent[i]);
 
         }
-        // Newlinr
+        // Newline
         printf("\n");
         counter++;
 
