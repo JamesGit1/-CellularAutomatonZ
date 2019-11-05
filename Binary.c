@@ -9,7 +9,7 @@ void binary()
 	if (select == 1)
 	{    
 		//Source: https://www.sanfoundry.com/c-program-binary-number-into-decimal/
-		int  decimal;
+		int  input;
 		int  og_decimal = 0;
 		int  binary;
 		int  remainder;
@@ -18,16 +18,16 @@ void binary()
 		//collects the binary
 		printf("\nCovert Binary to Decimal (To 10 bits)\n");
 		printf("\nPlease input binary: ");
-		scanf("%d", &decimal);
+		scanf("%d", &input);
 
-	    binary = decimal;
+	    binary = input;
 
-	    while (decimal > 0)
+	    while (input > 0)
 	    {
 
-	        remainder = (decimal % 10);
+	        remainder = (input % 10);
 	        og_decimal = (og_decimal + (remainder * base));
-	        decimal = (decimal / 10) ;
+	        input = (input / 10) ;
 	        base = (base * 2);
 	    }
 
@@ -36,18 +36,18 @@ void binary()
 	}
 	else if (select == 2)
 	{
-		int dec;
+		int input;
 		int og_dec;
 		double bin_Div = 2147483648;
-		double binarySum = (bin_Div / dec);
-		double currentDec = (dec - bin_Div);
+		double binarySum = (bin_Div / input);
+		double currentDec = (input - bin_Div);
 		int start = 0;
 
 		printf("\nCovert Decimal to Binary\n");
 		printf("\nPlease input decimal: ");
-		scanf("%d", &dec);
+		scanf("%d", &input);
 
-		og_dec = dec;
+		og_dec = input;
 		start = 0;
 
 		printf("\n%d is ", og_dec);
