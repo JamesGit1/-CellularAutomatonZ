@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdbool.h>
+#include <time.h>
 
 int displayMenu()
 {
@@ -9,8 +10,21 @@ int displayMenu()
     printf("Option 1. Rule 30 Automaton \n");
     printf("Option 2. Rule 60 Automaton \n");
     printf("Option 3. Custom Rule Automaton \n");
+    printf("Option 4. Game of Life \n");
     printf("0. Exit\n");
 }
+
+// https://www.geeksforgeeks.org/time-delay-c/
+void delay(int milli_seconds) 
+{  
+    // Stroing start time 
+    clock_t start_time = clock(); 
+  
+    // looping till required time is not acheived 
+    while (clock() < start_time + milli_seconds) 
+        ; 
+} 
+
 // checks all neighbouring cells
 // TODO add generation size to be custom
 int checks(int p[], int c[],int current, int size)
@@ -182,6 +196,189 @@ int askGenSize()
     return size;
 }
 
+int printGameArray(int arrayToPrint[][30], int size){
+for (int i = 0; i < size; i++)
+    {
+        printf("\n");
+        for (int j = 0; j < size; j++)
+        {
+            if (arrayToPrint[i][j]==0){
+                printf("  ");
+            }
+            else{
+                printf("# ");
+                //printf("%d ",arrayToPrint[i][j]);
+            }
+        }
+        
+    }
+    printf("\n");
+}
+
+int checkNumSurrounding(int current[][30],int i, int j){
+    int liveSurrounding = 0;
+    
+    if((i>0)&&(j>0)){
+        if(current[(i-1)][(j-1)]==1)
+            liveSurrounding++;
+    }
+    
+    if(j>0){
+        if(current[(i)][(j-1)]==1)
+            liveSurrounding++;
+    }
+
+    if((i<29)&&(j>0)){
+        if(current[(i+1)][(j-1)]==1)
+            liveSurrounding++;
+    }
+
+    if(i>0){
+        if(current[(i-1)][(j)]==1)
+            liveSurrounding++;
+    }
+
+    if((i<29)){
+        if(current[(i+1)][(j)]==1)
+            liveSurrounding++; 
+    }
+
+    if((i>0)&&(j<29)){
+        if(current[(i-1)][(j+1)]==1)
+            liveSurrounding++;
+    }
+
+    if(j<29){ 
+        if(current[(i)][(j+1)]==1)
+            liveSurrounding++;
+    }
+
+    if((i<29)&&(j<29)){
+        if(current[(i+1)][(j+1)]==1)
+            liveSurrounding++;
+    }
+
+    return liveSurrounding;
+}
+
+
+int runGameOfLife(){
+    int ticks;
+    int check = 0;
+
+    while(check == 0)
+    {
+        printf("How long would you like to run the simulation? ");
+        scanf("%d", &ticks);
+        while(getchar() != '\n');
+        if(ticks < 2)
+        {
+            printf("Invalid input please enter a value greater than 2 \n");
+            check = 0;
+        }
+        else
+        {
+            check = 1;
+        }
+    }
+
+    int size = 30;
+
+    int current[30][30] = {0};
+    int next[30][30] = {0};
+    char answer;
+
+    printf("\nWould you like to randomize the first array: ");
+    scanf(" %c", &answer);
+    while (!(answer=='y' || answer=='Y' || answer=='n' || answer=='N')){
+        printf("\nPlease enter y/n: ");
+        scanf(" %c", &answer);
+    }
+    
+    if(answer=='n' || answer=='N'){
+        current[14][15] = 1;
+        current[14][16] = 1;
+        current[14][17] = 1;
+        current[14][19] = 1;
+
+        current[15][15] = 1;
+
+        current[16][18] = 1;
+        current[16][19] = 1;
+
+        current[17][16] = 1;
+        current[17][17] = 1;
+        current[17][19] = 1;
+
+        current[18][15] = 1;
+        current[18][17] = 1;
+        current[18][19] = 1;
+    }
+    else
+    {
+        srand(time(NULL));
+        for (int i = 0; i < size; i++){
+                for (int j = 0; j < size; j++){
+                    int randomNum = rand() % 2;
+                    current[i][j] = randomNum;
+                }
+        }
+    }
+
+    printf("\n\n===================");
+    printf("RUNNING GAME OF LIFE FOR %d ticks",ticks);
+    printf("===================\n\n");
+
+    printf("3...\n");
+    delay(1000);
+    printf("2...\n");
+    delay(1000);
+    printf("1...");
+    delay(1000);
+    
+
+    for (int runtime = 1; runtime <= ticks; runtime++){
+        delay(500);
+
+        printf("\n\n=========================================================\n");
+        printf("RUNTIME=%d",runtime);
+
+        printGameArray(current,size);
+
+        for (int i = 0; i < size; i++)
+        {
+            for (int j = 0; j < size; j++)
+            {
+                if (current[i][j] == 1){
+                    int liveSurrounding = checkNumSurrounding(current,i,j);
+                    if(liveSurrounding<2){
+                        next[i][j] = 0;
+                    }
+                    if(liveSurrounding==2 || liveSurrounding==3){
+                        next[i][j] = 1;
+                    }
+                    if(liveSurrounding>3){
+                        next[i][j] = 0;
+                    }
+                }
+                else{
+                    int liveSurrounding = checkNumSurrounding(current,i,j);
+                    if(liveSurrounding==3){
+                        next[i][j] = 1;   
+                    }
+                }
+            }
+        
+        }
+
+        for (int i = 0; i < size; i++){
+            for (int j = 0; j < size; j++){
+                current[i][j] = next[i][j];
+            }
+        }
+        
+    }
+}
 
 int rules()
 {
@@ -245,6 +442,9 @@ int rules()
             printf("\n\nAUTOMATON\n");
             runAutomaton(generations,ruleUser,size);
             break;
+        case 4:
+            runGameOfLife();
+            break;
         case 0:
             printf("\nGoodbye");
             break;
@@ -264,8 +464,6 @@ int dectobin(int dec){
     int start = 0;
 
     printf("\nCovert Decimal to Binary\n");
-    printf("\nPlease input decimal: ");
-    scanf("%d", &dec);
 
     og_dec = dec;
     start = 0;
