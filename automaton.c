@@ -24,17 +24,20 @@ int checks(int p[], int c[],int current, int size)
 // Need to pass in size so i can cycle     
     if(current == 0)
     {
-        left = size--;
+        //printf("%d Current = 0 :  \n", left);
+        left = (size-1);
         right = 1;
     }
-    else if(current == size--)
+    else if(current == (size-1))
     {
-        left = current--;
+        //printf("%d Current = Size :  \n",left );
+        left = current-1 ;
         right = 0;
     }
     else
     {
-        left = current - 1 ;
+        //printf("%d %d Current = Other :  \n", left, right);
+        left = current -1 ;
         right = current + 1;
     }
 
@@ -77,8 +80,50 @@ int checks(int p[], int c[],int current, int size)
 
 }
 
-int firstGen(int *parentp, int size){
-    printf("Please define \n");
+FILE* initfile(){
+char filename[11] ="output.txt";
+FILE *fp;
+
+    fp = fopen(filename, "w");
+    return fp;
+}
+
+int optionOutput(){
+    printf("Would you like to write the output into a file [y/n]: ");
+    int check = 0;
+    char answer;
+    while(check == 0)
+    {
+
+        scanf("%c", &answer);
+        while(getchar() != '\n');
+        if((!(answer=='y' || answer=='Y' || answer=='n' || answer=='N')))
+        {
+            printf("Invalid output please write [y/n]:  \n");
+            check = 0;
+        }
+        else
+        {
+            check = 1;
+        }
+    }
+
+    if(answer=='y' || answer=='Y' ){
+        return 1;
+    }
+    else{
+      return 0;  
+    }
+}
+
+
+
+int runAutomaton(int gen,int rule[],int size)
+{
+    
+    int parent[size];
+    FILE* fp;
+    printf("\nPlease define the first generation, with size %d \n",size);
     for (int i=0; i<size; ++i){
         int answer=-1; 
         while(!(answer==1 || answer==0)){
@@ -86,16 +131,14 @@ int firstGen(int *parentp, int size){
             scanf("%d", &answer);
         }
 
-        parentp[i] = answer;  
+        parent[i] = answer;  
     }
 
-}
+    int fileOption = optionOutput();
+    if(fileOption == 1){
+    fp = initfile();
+    }
 
-int runAutomaton(int gen,int rule[],int size)
-{
-    // TODO Make it so the One is at a random spot or let user pick
-    // TODO ask for user how big the array is
-    int parent[size];
 
     int child[size];
     int state;
@@ -103,31 +146,94 @@ int runAutomaton(int gen,int rule[],int size)
 
     do
     {
-        // Size of parent
+        // Size of parentg
         for(int i = 0 ; i < size; i++)
         {
                 // Write binary in here
             state = checks(parent,child,i,size);
             child[i] = rule[state];
+            if(fileOption == 1){
+                   fprintf(fp, "%d",parent[i]);
+            }
             printf("%d",parent[i]);
 
         }
-        // Newlinr
+        // Newline
+         if(fileOption == 1){
+                   fprintf(fp,"\n");
+            }
         printf("\n");
         counter++;
 
-        for(int j = 0; j <= 7; j++)
+        for(int j = 0; j < size; j++)
         {
-            //TODO make a print nicely
             //TODO maybe print it to a text file
             parent[j] = child[j];
             child[j] = 0;
 
+
+
         }
     }
     while(gen != counter);
-
+     if(fileOption == 1){
+    fclose(fp);
 }
+}
+
+int askGen()
+{
+    int gen;
+    int check = 0;
+
+    while(check == 0)
+    {
+ 
+        printf("How many generations would you like to run: ");
+        scanf("%d", &gen);
+        while(getchar() != '\n');
+        if(gen < 2 || gen > 256)
+        {
+            printf("Invalid out put please type a number between 2 and 256 \n");
+            check = 0;
+        }
+        else
+        {
+            check = 1;
+        }
+    }
+
+    return gen;
+}
+
+int askGenSize()
+{
+
+    int size =0;
+    int check = 0;
+
+    while(check == 0)
+    {
+        printf("How big do you want each generation to be: ");
+        if(scanf("%d", &size) != 1)
+        {
+            printf("Invalid out put please type a number between 3 and 256 \n");
+        }
+        else if(size < 3 || size > 256)
+        {
+            printf("Invalid out put please type a number between 3 and 256 \n");
+            check = 0;
+        }
+        else
+        {
+            check = 1;
+        }
+        while(getchar() != '\n');
+    }
+
+    return size;
+}
+
 
 int rules()
 {
@@ -144,39 +250,34 @@ int rules()
     {
         displayMenu();
         scanf("%d", &option);
-
+        while(getchar() != '\n');
 
         switch (option)
         {
         case 1:
             printf("You have selected rule 30\n");
-            printf("Please enter the size of each generation:");
-            scanf("%d", &size);
+            size = askGenSize();
             //TODO Input validation
-            printf("How many generations would you like to run: ");
-            scanf("%d", &generations);
+            generations = askGen();
             runAutomaton(generations,rule30,size);
             break;
         case 2:
             printf("You have selected rule 60\n");
-            printf("Please enter the size of each generation:");
-            scanf("%d", &size);
+            size = askGenSize();
             //TODO Input validation
-            printf("How many generations would you like to run: ");
-            scanf("%d", &generations);
+            generations = askGen();
             runAutomaton(generations,rule60,size);
             break;
         case 3:
             printf("You have selected custom rule\n");
-            printf("Please enter the size of each generation:");
-            scanf("%d", &size);
+            size = askGenSize();
 
             // TODO ask for each bit while loop won't increemnt until valid number or he presse 9 exit
             // TODO ask for gen between 2 and 256
             // TODO also checks what rule it is by converting the binary vaule of the array by using Andrews thing and by concat the user input into 2 variables
-            printf("How many generations would you like to run\n");
-            scanf("%d", &generations);
+            generations = askGen();
 
+            //REPLACE THIS WITH DECIMAL CONVERTER
             printf("Please enter the custom rule 1 or 0s \n");
             printf("e.g. 010101101 \n\n");
             for (int i=0; i<8; ++i)
@@ -197,7 +298,7 @@ int rules()
             runAutomaton(generations,ruleUser,size);
             break;
         case 0:
-            printf("Goodbye");
+            printf("\nGoodbye");
             break;
         default:
             printf("Please type in a valid number\n");
@@ -207,7 +308,46 @@ int rules()
     while(option!=0);
 }
 
+int dectobin(int dec){
+    int og_dec;
+    double bin_Div = 2147483648;
+    double binarySum = (bin_Div / dec);
+    double currentDec = (dec - bin_Div);
+    int start = 0;
+
+    printf("\nCovert Decimal to Binary\n");
+    printf("\nPlease input decimal: ");
+    scanf("%d", &dec);
+
+    og_dec = dec;
+    start = 0;
+
+    printf("\n%d is ", og_dec);
+
+    for (int i = 0; i < 32; ++i){
+        if ((og_dec / bin_Div) >= 1 && (og_dec / bin_Div) < 2){
+            og_dec = (og_dec - bin_Div);
+            bin_Div = (bin_Div / 2);
+            printf("1");
+            start = 1;
+        }
+        else if (start == 1){
+            bin_Div = (bin_Div / 2);
+            printf("0");
+        }
+        else if (start == 0){
+            bin_Div = (bin_Div / 2);
+        }
+        else{
+            printf("\nWhoops\n");
+        }
+    }
+
+    return dec;
+}
+
 int main()
 {
-    rules();
+       rules();
+
 }
