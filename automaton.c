@@ -281,7 +281,7 @@ int askGenSize()
 }
 
 //Print array contents to screen
-int printGameArray(int arrayToPrint[][30], int size){
+int printGameArray(int arrayToPrint[][50], int size){
 for (int i = 0; i < size; i++)
     {
         printf("\n");
@@ -301,7 +301,7 @@ for (int i = 0; i < size; i++)
 }
 
 // Function that counts up alive cells around current cell
-int checkNumSurrounding(int current[][30],int i, int j){
+int checkNumSurrounding(int current[][50],int i, int j,int size){
     int liveSurrounding = 0;
     
     //Check top left
@@ -312,12 +312,12 @@ int checkNumSurrounding(int current[][30],int i, int j){
 
     //Check left
     if(j>0){
-        if(current[(i)][(j-1)]==1)
+        if(current[i][(j-1)]==1)
             liveSurrounding++;
     }
 
     //Check bottom left
-    if((i<29)&&(j>0)){
+    if((i<(size-1))&&(j>0)){
         if(current[(i+1)][(j-1)]==1)
             liveSurrounding++;
     }
@@ -329,25 +329,25 @@ int checkNumSurrounding(int current[][30],int i, int j){
     }
 
     //Check bottom
-    if((i<29)){
+    if((i<(size-1))){
         if(current[(i+1)][(j)]==1)
             liveSurrounding++; 
     }
 
     //Check bottom right
-    if((i>0)&&(j<29)){
+    if((i>0)&&(j<(size-1))){
         if(current[(i-1)][(j+1)]==1)
             liveSurrounding++;
     }
 
     //Check right
-    if(j<29){ 
+    if(j<(size-1)){ 
         if(current[(i)][(j+1)]==1)
             liveSurrounding++;
     }
 
     //Check top right
-    if((i<29)&&(j<29)){
+    if((i<(size-1))&&(j<(size-1))){
         if(current[(i+1)][(j+1)]==1)
             liveSurrounding++;
     }
@@ -363,27 +363,30 @@ int runGameOfLife(){
     //loops until correct value is input
     while(check == 0)
     {
-        printf("How long would you like to run the simulation? ");
-        scanf("%d", &ticks);
-        while(getchar() != '\n');
-        if(ticks < 2)
+        printf("How big do you want each generation to be: ");
+        if(scanf("%d", &ticks) != 1)
         {
-            printf("Invalid input please enter a value greater than 2 \n");
+            printf("Invalid input, please enter a value greater than 1 \n");
+        }
+        else if(ticks<2)
+        {
+            printf("Invalid input, please enter a value greater than 1 \n");
             check = 0;
         }
         else
         {
             check = 1;
         }
+        while(getchar() != '\n');
     }
 
     //The set size of the 2D array. This could be input by user but seemed simpler to leave
     //it at 30 so looked okay in the teminal 
-    int size = 30;
+    int size = 50;
 
     //Initialise the 2 2D arrays
-    int current[30][30] = {0};
-    int next[30][30] = {0};
+    int current[size][size];
+    int next[size][size];
     char answer;
 
     //Asks if the user would like a randomized array or the pre defined shape that should
@@ -396,7 +399,7 @@ int runGameOfLife(){
     }
     
     if(answer=='n' || answer=='N'){
-        // Setup which should result in infinite growth
+        // Setup which should result in infinite growth if it was unrestricted by range
         current[14][15] = 1;
         current[14][16] = 1;
         current[14][17] = 1;
@@ -430,7 +433,7 @@ int runGameOfLife(){
     for (int runtime = 1; runtime <= ticks; runtime++){
         delay(500);
 
-        printf("\n\n=========================================================\n");
+        printf("\n\n====================================================================================================\n");
         printf("RUNTIME=%d",runtime);
 
         //Print out the current tick
@@ -442,7 +445,7 @@ int runGameOfLife(){
             {
                 //If the cell is alive
                 if (current[i][j] == 1){
-                    int liveSurrounding = checkNumSurrounding(current,i,j);
+                    int liveSurrounding = checkNumSurrounding(current,i,j,size);
                     //Check if the cell will die due to underpopulation
                     if(liveSurrounding<2){
                         next[i][j] = 0;
@@ -459,7 +462,7 @@ int runGameOfLife(){
                 //Otherwise if the cell is dead
                 else{
                     //Check if it will be repopulated
-                    int liveSurrounding = checkNumSurrounding(current,i,j);
+                    int liveSurrounding = checkNumSurrounding(current,i,j,size);
                     if(liveSurrounding==3){
                         next[i][j] = 1;   
                     }
@@ -574,8 +577,8 @@ void binaryConversion()
 // Gets the rules and sets the gensize and gen and display the menu
 int rules()
 {
+    
     int option = -1;
-
     int generations;
     int rule30[8] = {0,0,0,1,1,1,1,0};
     int rule60[8] = {0,0,1,1,1,1,0,0};
@@ -583,6 +586,8 @@ int rules()
     int size;
     do
     {
+        //re initialise option
+        option = -1;
         // Displays menu
         displayMenu();
         scanf("%d", &option);
